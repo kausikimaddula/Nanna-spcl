@@ -18,6 +18,23 @@
 <body>
   <main class="scene">
 
+    <!-- Floating Background Music Player -->
+    <div class="music-widget" id="musicWidget">
+      <button class="music-btn" id="musicToggleBtn" type="button" aria-label="Toggle background music" title="Play / Pause Birthday Music">
+        <div class="music-btn__disc" id="musicDisc">
+          <span class="music-btn__icon" id="musicIcon">🎵</span>
+        </div>
+        <div class="music-waves" id="musicWaves" aria-hidden="true">
+          <span class="wave-bar"></span>
+          <span class="wave-bar"></span>
+          <span class="wave-bar"></span>
+          <span class="wave-bar"></span>
+        </div>
+        <span class="music-btn__label" id="musicLabel">Play Music</span>
+      </button>
+      <audio id="bgAudio" preload="auto"></audio>
+    </div>
+
     <!-- The tree world (Act 4). One canvas; it stays transparent until the
          intro hands off, then it draws its own warm sky + blossom tree. -->
     <canvas id="tree" class="tree" aria-label="A blossom tree grows and blooms into a heart made of petals" role="img"></canvas>
@@ -448,13 +465,6 @@
             <button class="photo-tab-btn" id="btnGridView" type="button" role="tab" aria-selected="false">
               <span>📑</span> Scrapbook Grid
             </button>
-          </div>
-          
-          <div class="photo-action-tools">
-            <label class="photo-upload-label" title="Quickly preview photos directly from your computer">
-              <span>➕</span> Add / Quick Preview
-              <input type="file" id="photoFileInput" accept="image/*" multiple hidden />
-            </label>
           </div>
         </div>
 

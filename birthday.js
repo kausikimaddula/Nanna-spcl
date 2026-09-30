@@ -21,6 +21,7 @@
 
 import gsap from 'gsap';
 import { PHOTO_MEMORIES } from './photos-data.js';
+import { AUDIO_CONFIG } from './audio-data.js';
 
 /* the pen-stroke plugin: a `drawn` 0..1 property for the underline */
 gsap.registerPlugin({
@@ -118,6 +119,16 @@ const closeLightboxBackdrop = $('closeLightboxBackdrop');
 const lightboxImg = $('lightboxImg');
 const lightboxTag = $('lightboxTag');
 const lightboxCaption = $('lightboxCaption');
+
+/* Background Music Elements & Controls */
+const musicWidget = $('musicWidget');
+const musicToggleBtn = $('musicToggleBtn');
+const musicDisc = $('musicDisc');
+const musicIcon = $('musicIcon');
+const musicLabel = $('musicLabel');
+const bgAudio = $('bgAudio');
+let isMusicPlaying = false;
+let userHasInteracted = false;
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isRecord     = new URLSearchParams(location.search).has('record');
@@ -1273,6 +1284,81 @@ function initPhotoAlbum(){
   renderScrapbookGrid();
 }
 
+function initBackgroundMusic(){
+  if (!bgAudio) return;
+
+  if (AUDIO_CONFIG && AUDIO_CONFIG.src) {
+    bgAudio.src = AUDIO_CONFIG.src;
+    bgAudio.loop = AUDIO_CONFIG.loop !== false;
+    bgAudio.volume = AUDIO_CONFIG.volume !== undefined ? AUDIO_CONFIG.volume : 0.65;
+  }
+
+  const updateMusicUI = (playing) => {
+    isMusicPlaying = playing;
+    if (musicWidget) {
+      if (playing) {
+        musicWidget.classList.add('is-playing');
+        if (musicLabel) musicLabel.textContent = 'Pause Music';
+        if (musicIcon) musicIcon.textContent = '🎶';
+      } else {
+        musicWidget.classList.remove('is-playing');
+        if (musicLabel) musicLabel.textContent = 'Play Music';
+        if (musicIcon) musicIcon.textContent = '🎵';
+      }
+    }
+  };
+
+  bgAudio.addEventListener('play', () => updateMusicUI(true));
+  bgAudio.addEventListener('pause', () => updateMusicUI(false));
+  bgAudio.addEventListener('ended', () => updateMusicUI(false));
+
+  const startMusicPlayback = () => {
+    if (bgAudio.paused) {
+      const playPromise = bgAudio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => updateMusicUI(true))
+          .catch((err) => {
+            console.log('Audio playback info: Put your audio file at public/audio/song.mp3 to hear music! (', err.message, ')');
+          });
+      }
+    }
+  };
+
+  const toggleMusic = () => {
+    if (bgAudio.paused) {
+      startMusicPlayback();
+    } else {
+      bgAudio.pause();
+      updateMusicUI(false);
+    }
+  };
+
+  if (musicToggleBtn) {
+    musicToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMusic();
+    });
+  }
+
+  // Trigger on first interaction anywhere on page (screen touch, mouse drag on bow, click)
+  if (AUDIO_CONFIG && AUDIO_CONFIG.autoplayOnInteraction) {
+    const handleFirstInteraction = () => {
+      if (!userHasInteracted) {
+        userHasInteracted = true;
+        startMusicPlayback();
+      }
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
+    window.addEventListener('keydown', handleFirstInteraction, { passive: true });
+  }
+}
+
 /* back to Act 1, ready to be drawn again */
 function resetAll(){
   treeStop();
@@ -1327,6 +1413,7 @@ if (reduceMotion){
   document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
   enter();
   initPhotoAlbum();
+  initBackgroundMusic();
 
   if (surpriseBtn1) surpriseBtn1.addEventListener('click', () => openSurpriseModal(surpriseModal1));
   if (surpriseBtn2) surpriseBtn2.addEventListener('click', () => {
