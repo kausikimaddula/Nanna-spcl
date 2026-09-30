@@ -895,3 +895,589 @@ body{
   color: #8c1a3b;
 }
 
+/* ============================================================
+   SURPRISE 2 - PHOTO MEMORIES ALBUM & SCRAPBOOK GALLERY
+   ============================================================ */
+.photo-modal__card {
+  width: min(920px, 94vw) !important;
+  max-width: 920px !important;
+  max-height: 92vh !important;
+  padding: 28px 30px 32px !important;
+  background: linear-gradient(165deg, rgba(255,253,250,0.98) 0%, rgba(255,244,247,0.96) 100%) !important;
+  border-radius: 26px !important;
+}
+
+.photo-modal__subtitle {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(15px, 3.4vw, 17.5px);
+  font-style: italic;
+  color: #8c4155;
+  margin: -8px 0 18px;
+}
+
+/* Controls & Mode Selector */
+.photo-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed rgba(220, 160, 180, 0.45);
+}
+
+.photo-view-tabs {
+  display: inline-flex;
+  background: rgba(255, 225, 235, 0.55);
+  border: 1px solid rgba(230, 170, 190, 0.5);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.photo-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: none;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #7b293d;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.photo-tab-btn:hover {
+  color: #a3143c;
+}
+
+.photo-tab-btn.is-active {
+  background: #ffffff;
+  color: #94133b;
+  box-shadow: 0 3px 10px rgba(180, 40, 80, 0.18);
+}
+
+.photo-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-family: "Lato", sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6d2435;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(220, 140, 165, 0.4);
+  box-shadow: 0 2px 8px rgba(160, 40, 70, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.photo-upload-label:hover {
+  background: #ffffff;
+  border-color: rgba(210, 80, 120, 0.7);
+  box-shadow: 0 4px 14px rgba(180, 40, 80, 0.18);
+  transform: translateY(-1px);
+  color: #9c143d;
+}
+
+/* Slideshow Container */
+.photo-slideshow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: photoFadeIn 0.35s ease forwards;
+}
+
+@keyframes photoFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.polaroid-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 6px auto 14px;
+}
+
+.washi-tape {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1.5deg);
+  width: 110px;
+  height: 24px;
+  background: rgba(255, 228, 200, 0.75);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(235, 170, 130, 0.2) 10px, rgba(235, 170, 130, 0.2) 20px);
+  border-left: 2px dashed rgba(210, 140, 100, 0.4);
+  border-right: 2px dashed rgba(210, 140, 100, 0.4);
+  box-shadow: 0 2px 6px rgba(100, 30, 10, 0.1);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.polaroid-photo-frame {
+  background: #ffffff;
+  padding: 14px 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px -8px rgba(120, 25, 50, 0.22), 0 2px 10px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(230, 200, 210, 0.6);
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.polaroid-photo-frame:hover {
+  transform: translateY(-2px) rotate(0.2deg);
+  box-shadow: 0 20px 40px -8px rgba(140, 25, 60, 0.26), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.polaroid-img-box {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  background: radial-gradient(circle at center, #fff6f8 0%, #fde6ec 60%, #fbd5df 100%);
+  border: 1px solid rgba(225, 170, 185, 0.45);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 10px rgba(180, 50, 80, 0.06);
+}
+
+.polaroid-img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 4px 14px rgba(120, 25, 55, 0.15));
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.polaroid-photo-frame:hover .polaroid-img {
+  transform: scale(1.02);
+  filter: drop-shadow(0 6px 18px rgba(120, 25, 55, 0.22));
+}
+
+/* Fallback card if user hasn't dropped image yet */
+.photo-placeholder-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fff0f3 0%, #ffe0e9 50%, #fed2de 100%);
+  border: 2px dashed rgba(220, 120, 150, 0.45);
+  border-radius: 10px;
+  z-index: 2;
+}
+
+.photo-placeholder-fallback[hidden],
+[hidden] {
+  display: none !important;
+}
+
+.fallback-icon {
+  font-size: 42px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 2px 8px rgba(200, 50, 90, 0.2));
+}
+
+.photo-placeholder-fallback h4 {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #7b1d38;
+  margin: 0 0 6px;
+}
+
+.fallback-hint {
+  font-family: "Lato", sans-serif;
+  font-size: 13px;
+  color: #8c4257;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.fallback-hint code {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  color: #a3143c;
+  border: 1px solid rgba(220, 120, 150, 0.35);
+}
+
+/* Caption and Meta area */
+.polaroid-caption-area {
+  padding: 16px 8px 4px;
+  text-align: center;
+}
+
+.polaroid-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.polaroid-tag {
+  display: inline-block;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94374e;
+  background: rgba(255, 225, 235, 0.6);
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(220, 150, 170, 0.35);
+}
+
+.polaroid-counter {
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a14c62;
+}
+
+.polaroid-caption {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(17px, 3.8vw, 21px);
+  font-weight: 700;
+  color: #69172f;
+  margin: 0 0 6px;
+  line-height: 1.25;
+}
+
+.polaroid-quote {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(14.5px, 3.2vw, 16px);
+  font-style: italic;
+  color: #7d374b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Slideshow Navigation Arrows */
+.polaroid-nav-btn {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(220, 130, 155, 0.5);
+  background: rgba(255, 255, 255, 0.92);
+  color: #7b1d38;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(120, 20, 50, 0.18);
+  cursor: pointer;
+  z-index: 8;
+  transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.polaroid-nav-btn:hover {
+  background: #ffffff;
+  color: #aa1242;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 8px 24px rgba(160, 20, 60, 0.3);
+}
+
+.polaroid-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.polaroid-nav-btn--prev { left: -16px; }
+.polaroid-nav-btn--next { right: -16px; }
+
+@media (max-width: 520px) {
+  .polaroid-nav-btn--prev { left: 4px; }
+  .polaroid-nav-btn--next { right: 4px; }
+  .polaroid-img-box { height: 230px; }
+}
+
+/* Slideshow Bottom Bar */
+.slideshow-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.slideshow-play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #782035;
+  background: rgba(255, 235, 240, 0.85);
+  border: 1px solid rgba(220, 150, 170, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slideshow-play-btn:hover {
+  background: #ffffff;
+  color: #9c143d;
+  box-shadow: 0 3px 10px rgba(180, 40, 80, 0.14);
+}
+
+.photo-thumbs-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 6px;
+  max-width: 100%;
+}
+
+.photo-thumb-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(210, 150, 170, 0.45);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.photo-thumb-dot:hover {
+  background: rgba(180, 50, 85, 0.7);
+  transform: scale(1.2);
+}
+
+.photo-thumb-dot.is-active {
+  background: #9c143d;
+  transform: scale(1.35);
+  box-shadow: 0 0 8px rgba(180, 30, 80, 0.5);
+}
+
+/* Scrapbook Grid Container */
+.photo-grid-container {
+  animation: photoFadeIn 0.35s ease forwards;
+}
+
+.scrapbook-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 22px 18px;
+  padding: 14px 6px 22px;
+}
+
+.scrapbook-card {
+  position: relative;
+  background: #ffffff;
+  padding: 12px 12px 14px;
+  border-radius: 12px;
+  box-shadow: 0 10px 22px -6px rgba(120, 20, 50, 0.16), 0 0 0 1px rgba(220, 180, 195, 0.5);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.scrapbook-card:nth-child(odd) { transform: rotate(-1.2deg); }
+.scrapbook-card:nth-child(even) { transform: rotate(1.4deg); }
+.scrapbook-card:nth-child(3n) { transform: rotate(-0.6deg); }
+
+.scrapbook-card:hover {
+  transform: scale(1.05) rotate(0deg) translateY(-4px);
+  box-shadow: 0 18px 32px -8px rgba(150, 25, 65, 0.28), 0 0 0 1.5px rgba(220, 90, 130, 0.6);
+  z-index: 10;
+}
+
+.scrapbook-card__img-box {
+  width: 100%;
+  height: 210px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #fff6f8 0%, #fde6ec 60%, #fbd5df 100%);
+  border: 1px solid rgba(225, 170, 185, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(180, 50, 80, 0.05);
+}
+
+.scrapbook-card__img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(120, 25, 55, 0.12));
+  transition: transform 0.3s ease;
+}
+
+.scrapbook-card:hover .scrapbook-card__img {
+  transform: scale(1.03);
+}
+
+.scrapbook-card__caption {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #69172f;
+  margin: 10px 0 4px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 2.5em;
+}
+
+.scrapbook-card__tag {
+  font-family: "Lato", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9c485d;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: auto;
+}
+
+.scrapbook-tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 14px;
+  background: rgba(255, 230, 190, 0.75);
+  border-left: 1px dashed rgba(200, 130, 90, 0.4);
+  border-right: 1px dashed rgba(200, 130, 90, 0.4);
+  pointer-events: none;
+}
+
+/* Lightbox Modal */
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.photo-lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.photo-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(25, 5, 12, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.photo-lightbox__content {
+  position: relative;
+  z-index: 1;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.92);
+  transition: transform 0.35s var(--ease-out);
+}
+
+.photo-lightbox.is-open .photo-lightbox__content {
+  transform: scale(1);
+}
+
+.photo-lightbox__close {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.photo-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: rotate(90deg);
+}
+
+.lightbox-img {
+  max-width: 82vw;
+  max-height: 70vh;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.3);
+  object-fit: contain;
+}
+
+.lightbox-info {
+  margin-top: 14px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.lightbox-tag {
+  display: inline-block;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffd6e0;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 3px 12px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.lightbox-caption {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(17px, 3.8vw, 22px);
+  font-weight: 600;
+  color: #fff4f7;
+  margin: 0;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+

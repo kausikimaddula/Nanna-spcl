@@ -210,8 +210,8 @@
         <span>Surprise 1</span>
       </button>
       <button class="surprise-btn surprise-btn--highlight" id="surpriseBtn2" type="button">
-        <span class="surprise-btn__icon">✨</span>
-        <span>Surprise 2</span>
+        <span class="surprise-btn__icon">📸</span>
+        <span>Photo Memories</span>
       </button>
     </div>
 
@@ -430,14 +430,96 @@
       </div>
     </div>
 
-    <!-- Surprise 2 Modal -->
-    <div class="surprise-modal" id="surpriseModal2" aria-hidden="true" hidden>
+    <!-- Surprise 2 Modal (Photo Memories Album) -->
+    <div class="surprise-modal photo-album-modal" id="surpriseModal2" aria-hidden="true" hidden>
       <div class="surprise-modal__backdrop" id="closeSurprise2Backdrop"></div>
-      <div class="surprise-modal__card">
+      <div class="surprise-modal__card photo-modal__card">
         <button class="surprise-modal__close" id="closeSurprise2" type="button" aria-label="Close modal">&times;</button>
-        <div class="surprise-modal__badge">Surprise #2 ✨</div>
+        <div class="surprise-modal__badge">Surprise #2 📸</div>
+        <h2 class="surprise-modal__title">Memories with Nanna ❤️</h2>
+        <p class="photo-modal__subtitle">Cherished moments and smiles etched in our hearts</p>
+        
+        <!-- Controls & Mode Selector -->
+        <div class="photo-controls">
+          <div class="photo-view-tabs" role="tablist">
+            <button class="photo-tab-btn is-active" id="btnSlideshowView" type="button" role="tab" aria-selected="true">
+              <span>🎞️</span> Slideshow
+            </button>
+            <button class="photo-tab-btn" id="btnGridView" type="button" role="tab" aria-selected="false">
+              <span>📑</span> Scrapbook Grid
+            </button>
+          </div>
+          
+          <div class="photo-action-tools">
+            <label class="photo-upload-label" title="Quickly preview photos directly from your computer">
+              <span>➕</span> Add / Quick Preview
+              <input type="file" id="photoFileInput" accept="image/*" multiple hidden />
+            </label>
+          </div>
+        </div>
+
         <div class="surprise-modal__body">
-          <!-- Empty for your content -->
+          <!-- Slideshow View Container -->
+          <div class="photo-slideshow-container" id="photoSlideshowContainer">
+            <div class="polaroid-wrapper" id="polaroidWrapper">
+              <div class="washi-tape washi-tape--top"></div>
+              
+              <div class="polaroid-photo-frame">
+                <div class="polaroid-img-box" id="polaroidImgBox">
+                  <img id="currentPhotoImg" src="" alt="Memory with Nanna" class="polaroid-img" />
+                  <div class="photo-placeholder-fallback" id="photoFallbackBox" hidden>
+                    <div class="fallback-icon">📷</div>
+                    <h4>Photo Memory</h4>
+                    <p class="fallback-hint" id="fallbackHintText">Drop <code>photo1.jpg</code> into <code>public/photos/</code></p>
+                  </div>
+                </div>
+                <div class="polaroid-caption-area">
+                  <div class="polaroid-badge-row">
+                    <span class="polaroid-tag" id="polaroidTag">Cherished Moments</span>
+                    <span class="polaroid-counter" id="polaroidCounter">1 / 6</span>
+                  </div>
+                  <h3 class="polaroid-caption" id="polaroidCaption">With the sweetest and strongest pillar of our family ❤️</h3>
+                  <p class="polaroid-quote" id="polaroidQuote">"Your smile brings warmth and happiness to our entire home."</p>
+                </div>
+              </div>
+
+              <!-- Slideshow Navigation Arrows -->
+              <button class="polaroid-nav-btn polaroid-nav-btn--prev" id="btnPrevPhoto" type="button" aria-label="Previous photo">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <button class="polaroid-nav-btn polaroid-nav-btn--next" id="btnNextPhoto" type="button" aria-label="Next photo">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- Slideshow Controls Strip (Play/Pause, Indicators) -->
+            <div class="slideshow-bottom-bar">
+              <button class="slideshow-play-btn" id="btnToggleAutoPlay" type="button" title="Auto play slideshow">
+                <span id="autoPlayIcon">▶</span> <span id="autoPlayText">Auto Play</span>
+              </button>
+              
+              <!-- Thumbnails Strip -->
+              <div class="photo-thumbs-strip" id="photoThumbsStrip"></div>
+            </div>
+          </div>
+
+          <!-- Scrapbook Grid Container -->
+          <div class="photo-grid-container" id="photoGridContainer" hidden>
+            <div class="scrapbook-grid" id="scrapbookGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox Modal for Grid Photo Zoom -->
+    <div class="photo-lightbox" id="photoLightbox" aria-hidden="true" hidden>
+      <div class="photo-lightbox__backdrop" id="closeLightboxBackdrop"></div>
+      <div class="photo-lightbox__content">
+        <button class="photo-lightbox__close" id="closeLightboxBtn" type="button" aria-label="Close lightbox">&times;</button>
+        <img id="lightboxImg" src="" alt="Enlarged memory photo" class="lightbox-img" />
+        <div class="lightbox-info">
+          <span class="lightbox-tag" id="lightboxTag"></span>
+          <p class="lightbox-caption" id="lightboxCaption"></p>
         </div>
       </div>
     </div>

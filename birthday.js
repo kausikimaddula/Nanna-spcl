@@ -20,6 +20,7 @@
    ============================================================ */
 
 import gsap from 'gsap';
+import { PHOTO_MEMORIES } from './photos-data.js';
 
 /* the pen-stroke plugin: a `drawn` 0..1 property for the underline */
 gsap.registerPlugin({
@@ -88,6 +89,35 @@ let cakeHtmlTemplate = '';
 if (cakeContainer) {
   cakeHtmlTemplate = cakeContainer.innerHTML;
 }
+
+/* Photo Memories Album Elements */
+const btnSlideshowView = $('btnSlideshowView');
+const btnGridView = $('btnGridView');
+const photoFileInput = $('photoFileInput');
+const photoSlideshowContainer = $('photoSlideshowContainer');
+const photoGridContainer = $('photoGridContainer');
+const polaroidWrapper = $('polaroidWrapper');
+const currentPhotoImg = $('currentPhotoImg');
+const photoFallbackBox = $('photoFallbackBox');
+const fallbackHintText = $('fallbackHintText');
+const polaroidTag = $('polaroidTag');
+const polaroidCounter = $('polaroidCounter');
+const polaroidCaption = $('polaroidCaption');
+const polaroidQuote = $('polaroidQuote');
+const btnPrevPhoto = $('btnPrevPhoto');
+const btnNextPhoto = $('btnNextPhoto');
+const btnToggleAutoPlay = $('btnToggleAutoPlay');
+const autoPlayIcon = $('autoPlayIcon');
+const autoPlayText = $('autoPlayText');
+const photoThumbsStrip = $('photoThumbsStrip');
+const scrapbookGrid = $('scrapbookGrid');
+
+const photoLightbox = $('photoLightbox');
+const closeLightboxBtn = $('closeLightboxBtn');
+const closeLightboxBackdrop = $('closeLightboxBackdrop');
+const lightboxImg = $('lightboxImg');
+const lightboxTag = $('lightboxTag');
+const lightboxCaption = $('lightboxCaption');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isRecord     = new URLSearchParams(location.search).has('record');
@@ -956,6 +986,293 @@ function closeSurpriseModal(modal){
   }, 350);
 }
 
+/* ============================================================
+   PHOTO MEMORIES ALBUM CONTROLLER
+   ============================================================ */
+let photoList = Array.isArray(PHOTO_MEMORIES) && PHOTO_MEMORIES.length > 0
+  ? [...PHOTO_MEMORIES]
+  : [
+      {
+        src: '/photos/image1.jpg',
+        caption: 'With the sweetest and strongest pillar of our family ❤️',
+        tag: 'Cherished Moments',
+        quote: 'Your smile brings warmth and happiness to our entire home.'
+      }
+    ];
+
+let currentPhotoIdx = 0;
+let isAutoPlaying = false;
+let autoPlayInterval = null;
+
+function renderPhotoSlideshow(idx){
+  if (!photoList || photoList.length === 0) return;
+  if (idx < 0) idx = photoList.length - 1;
+  if (idx >= photoList.length) idx = 0;
+  currentPhotoIdx = idx;
+
+  const item = photoList[currentPhotoIdx];
+  if (!item) return;
+
+  if (polaroidTag) polaroidTag.textContent = item.tag || 'Memory';
+  if (polaroidCounter) polaroidCounter.textContent = `${currentPhotoIdx + 1} / ${photoList.length}`;
+  if (polaroidCaption) polaroidCaption.textContent = item.caption || 'Special Memory with Nanna';
+  if (polaroidQuote) polaroidQuote.textContent = item.quote ? `"${item.quote}"` : '';
+
+  if (currentPhotoImg && photoFallbackBox) {
+    const filename = (item.src || '').split('/').pop() || `photo${currentPhotoIdx + 1}.jpg`;
+    
+    // Set up handlers before setting src to catch immediate cache loads or errors
+    currentPhotoImg.onload = () => {
+      currentPhotoImg.hidden = false;
+      currentPhotoImg.style.display = 'block';
+      photoFallbackBox.hidden = true;
+      photoFallbackBox.style.display = 'none';
+    };
+    currentPhotoImg.onerror = () => {
+      currentPhotoImg.hidden = true;
+      currentPhotoImg.style.display = 'none';
+      photoFallbackBox.hidden = false;
+      photoFallbackBox.style.display = 'flex';
+      if (fallbackHintText) {
+        fallbackHintText.innerHTML = `Drop <code>${filename}</code> into <code>public/photos/</code>`;
+      }
+    };
+
+    if (item.src) {
+      photoFallbackBox.hidden = true;
+      photoFallbackBox.style.display = 'none';
+      currentPhotoImg.hidden = false;
+      currentPhotoImg.style.display = 'block';
+      currentPhotoImg.src = item.src;
+      if (currentPhotoImg.complete && currentPhotoImg.naturalWidth > 0) {
+        photoFallbackBox.hidden = true;
+        photoFallbackBox.style.display = 'none';
+        currentPhotoImg.hidden = false;
+        currentPhotoImg.style.display = 'block';
+      }
+    } else {
+      currentPhotoImg.hidden = true;
+      currentPhotoImg.style.display = 'none';
+      photoFallbackBox.hidden = false;
+      photoFallbackBox.style.display = 'flex';
+    }
+  }
+
+  // Update thumbnail dots
+  if (photoThumbsStrip) {
+    const dots = photoThumbsStrip.querySelectorAll('.photo-thumb-dot');
+    dots.forEach((dot, dIdx) => {
+      if (dIdx === currentPhotoIdx) {
+        dot.classList.add('is-active');
+      } else {
+        dot.classList.remove('is-active');
+      }
+    });
+  }
+}
+
+function nextPhoto(){
+  renderPhotoSlideshow(currentPhotoIdx + 1);
+}
+
+function prevPhoto(){
+  renderPhotoSlideshow(currentPhotoIdx - 1);
+}
+
+function startAutoPlay(){
+  if (isAutoPlaying) return;
+  isAutoPlaying = true;
+  if (autoPlayIcon) autoPlayIcon.textContent = '⏸';
+  if (autoPlayText) autoPlayText.textContent = 'Pause';
+  if (btnToggleAutoPlay) btnToggleAutoPlay.classList.add('is-playing');
+  autoPlayInterval = setInterval(nextPhoto, 3600);
+}
+
+function stopAutoPlay(){
+  isAutoPlaying = false;
+  if (autoPlayIcon) autoPlayIcon.textContent = '▶';
+  if (autoPlayText) autoPlayText.textContent = 'Auto Play';
+  if (btnToggleAutoPlay) btnToggleAutoPlay.classList.remove('is-playing');
+  if (autoPlayInterval) {
+    clearInterval(autoPlayInterval);
+    autoPlayInterval = null;
+  }
+}
+
+function toggleAutoPlay(){
+  if (isAutoPlaying) {
+    stopAutoPlay();
+  } else {
+    startAutoPlay();
+  }
+}
+
+function renderThumbnails(){
+  if (!photoThumbsStrip) return;
+  photoThumbsStrip.innerHTML = '';
+  photoList.forEach((_, idx) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = `photo-thumb-dot ${idx === currentPhotoIdx ? 'is-active' : ''}`;
+    dot.setAttribute('aria-label', `Go to photo ${idx + 1}`);
+    dot.addEventListener('click', () => {
+      stopAutoPlay();
+      renderPhotoSlideshow(idx);
+    });
+    photoThumbsStrip.appendChild(dot);
+  });
+}
+
+function renderScrapbookGrid(){
+  if (!scrapbookGrid) return;
+  scrapbookGrid.innerHTML = '';
+  photoList.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'scrapbook-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+
+    const filename = (item.src || '').split('/').pop() || `photo${idx + 1}.jpg`;
+
+    card.innerHTML = `
+      <div class="scrapbook-tape"></div>
+      <div class="scrapbook-card__img-box">
+        <img class="scrapbook-card__img" src="${item.src}" alt="${item.caption || 'Memory'}" loading="lazy" />
+      </div>
+      <p class="scrapbook-card__caption">${item.caption || 'Memory ' + (idx + 1)}</p>
+      <span class="scrapbook-card__tag">${item.tag || 'Nanna'}</span>
+    `;
+
+    const img = card.querySelector('img');
+    img.onerror = () => {
+      const box = card.querySelector('.scrapbook-card__img-box');
+      if (box) {
+        box.innerHTML = `<span style="font-size:28px;">📷</span>`;
+      }
+    };
+
+    card.addEventListener('click', () => openLightbox(idx));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox(idx);
+      }
+    });
+
+    scrapbookGrid.appendChild(card);
+  });
+}
+
+function openLightbox(idx){
+  if (!photoLightbox || !photoList[idx]) return;
+  const item = photoList[idx];
+  if (lightboxImg) {
+    lightboxImg.src = item.src;
+    lightboxImg.onerror = () => {
+      lightboxImg.src = '';
+    };
+  }
+  if (lightboxTag) lightboxTag.textContent = item.tag || 'Memory';
+  if (lightboxCaption) lightboxCaption.textContent = item.caption || '';
+  
+  photoLightbox.hidden = false;
+  requestAnimationFrame(() => {
+    photoLightbox.classList.add('is-open');
+    photoLightbox.setAttribute('aria-hidden', 'false');
+  });
+}
+
+function closeLightbox(){
+  if (!photoLightbox) return;
+  photoLightbox.classList.remove('is-open');
+  photoLightbox.setAttribute('aria-hidden', 'true');
+  setTimeout(() => {
+    if (!photoLightbox.classList.contains('is-open')) {
+      photoLightbox.hidden = true;
+    }
+  }, 300);
+}
+
+function switchPhotoView(view){
+  if (view === 'slideshow') {
+    if (photoSlideshowContainer) photoSlideshowContainer.hidden = false;
+    if (photoGridContainer) photoGridContainer.hidden = true;
+    if (btnSlideshowView) {
+      btnSlideshowView.classList.add('is-active');
+      btnSlideshowView.setAttribute('aria-selected', 'true');
+    }
+    if (btnGridView) {
+      btnGridView.classList.remove('is-active');
+      btnGridView.setAttribute('aria-selected', 'false');
+    }
+  } else {
+    stopAutoPlay();
+    if (photoSlideshowContainer) photoSlideshowContainer.hidden = true;
+    if (photoGridContainer) photoGridContainer.hidden = false;
+    if (btnGridView) {
+      btnGridView.classList.add('is-active');
+      btnGridView.setAttribute('aria-selected', 'true');
+    }
+    if (btnSlideshowView) {
+      btnSlideshowView.classList.remove('is-active');
+      btnSlideshowView.setAttribute('aria-selected', 'false');
+    }
+    renderScrapbookGrid();
+  }
+}
+
+function handlePhotoUpload(e){
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+
+  const newPhotos = [];
+  Array.from(files).forEach((file, fIdx) => {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      newPhotos.push({
+        src: evt.target.result,
+        caption: file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
+        tag: 'My Upload',
+        quote: 'A special memory with Nanna ❤️'
+      });
+      if (newPhotos.length === files.length) {
+        photoList = [...newPhotos, ...photoList];
+        currentPhotoIdx = 0;
+        renderThumbnails();
+        renderPhotoSlideshow(0);
+        renderScrapbookGrid();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Touch swipe support for polaroid frame
+let touchStartX = 0;
+let touchEndX = 0;
+if (polaroidWrapper) {
+  polaroidWrapper.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  polaroidWrapper.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (touchStartX - touchEndX > 50) {
+      stopAutoPlay();
+      nextPhoto();
+    } else if (touchEndX - touchStartX > 50) {
+      stopAutoPlay();
+      prevPhoto();
+    }
+  }, { passive: true });
+}
+
+function initPhotoAlbum(){
+  renderThumbnails();
+  renderPhotoSlideshow(0);
+  renderScrapbookGrid();
+}
+
 /* back to Act 1, ready to be drawn again */
 function resetAll(){
   treeStop();
@@ -965,6 +1282,8 @@ function resetAll(){
     surprisesEl.classList.remove('is-shown');
     surprisesEl.hidden = true;
   }
+  stopAutoPlay();
+  closeLightbox();
   showLetterView();
   closeSurpriseModal(surpriseModal1);
   closeSurpriseModal(surpriseModal2);
@@ -1007,21 +1326,59 @@ if (reduceMotion){
   buildMotes();
   document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
   enter();
+  initPhotoAlbum();
+
   if (surpriseBtn1) surpriseBtn1.addEventListener('click', () => openSurpriseModal(surpriseModal1));
-  if (surpriseBtn2) surpriseBtn2.addEventListener('click', () => openSurpriseModal(surpriseModal2));
+  if (surpriseBtn2) surpriseBtn2.addEventListener('click', () => {
+    openSurpriseModal(surpriseModal2);
+    renderPhotoSlideshow(currentPhotoIdx);
+  });
   if (closeSurprise1) closeSurprise1.addEventListener('click', () => closeSurpriseModal(surpriseModal1));
-  if (closeSurprise2) closeSurprise2.addEventListener('click', () => closeSurpriseModal(surpriseModal2));
+  if (closeSurprise2) closeSurprise2.addEventListener('click', () => {
+    stopAutoPlay();
+    closeSurpriseModal(surpriseModal2);
+  });
   if (closeSurprise1Backdrop) closeSurprise1Backdrop.addEventListener('click', () => closeSurpriseModal(surpriseModal1));
-  if (closeSurprise2Backdrop) closeSurprise2Backdrop.addEventListener('click', () => closeSurpriseModal(surpriseModal2));
+  if (closeSurprise2Backdrop) closeSurprise2Backdrop.addEventListener('click', () => {
+    stopAutoPlay();
+    closeSurpriseModal(surpriseModal2);
+  });
   
   if (btnThisIsForU) btnThisIsForU.addEventListener('click', showCakeView);
   if (btnReplayCake) btnReplayCake.addEventListener('click', playCakeAnimation);
   if (btnBackToLetter) btnBackToLetter.addEventListener('click', showLetterView);
 
+  /* Photo album controls */
+  if (btnPrevPhoto) btnPrevPhoto.addEventListener('click', () => {
+    stopAutoPlay();
+    prevPhoto();
+  });
+  if (btnNextPhoto) btnNextPhoto.addEventListener('click', () => {
+    stopAutoPlay();
+    nextPhoto();
+  });
+  if (btnToggleAutoPlay) btnToggleAutoPlay.addEventListener('click', toggleAutoPlay);
+  if (btnSlideshowView) btnSlideshowView.addEventListener('click', () => switchPhotoView('slideshow'));
+  if (btnGridView) btnGridView.addEventListener('click', () => switchPhotoView('grid'));
+  if (photoFileInput) photoFileInput.addEventListener('change', handlePhotoUpload);
+
+  if (closeLightboxBtn) closeLightboxBtn.addEventListener('click', closeLightbox);
+  if (closeLightboxBackdrop) closeLightboxBackdrop.addEventListener('click', closeLightbox);
+
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape'){
+      closeLightbox();
       closeSurpriseModal(surpriseModal1);
       closeSurpriseModal(surpriseModal2);
+      stopAutoPlay();
+    } else if (surpriseModal2 && surpriseModal2.classList.contains('is-open')) {
+      if (e.key === 'ArrowRight') {
+        stopAutoPlay();
+        nextPhoto();
+      } else if (e.key === 'ArrowLeft') {
+        stopAutoPlay();
+        prevPhoto();
+      }
     }
   });
 }
